@@ -1,0 +1,23 @@
+# UE编译输出
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+
+# IDE
+.vs/
+.idea/
+*.suo
+*.user
+.vscode/
+
+# 日志
+*.log
+
+# 打包输出
+Build/
+Packages/
+
+# 其他临时文件
+*.tmp
+*.bak
