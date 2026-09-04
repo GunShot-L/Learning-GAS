@@ -25,7 +25,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("增加血量上限")
 		);
 	
-	
+#pragma region "SencondaryTag"
 	GameplayTags.Attribute_Secondary_Armor = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Secondary.Armor"),
 		FString("减少物理伤害，提高格挡概率")
@@ -66,4 +66,39 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Attributes.Secondary.MaxMana"),
 		FString("最大法力值上限")
 		);
+#pragma endregion
+	
+	
+#pragma region "InputTag"
+	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("InputTag.LMB"),
+	FString("鼠标左键的输入标签")
+	);
+	
+	GameplayTags.InputTag_RMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("InputTag.RMB"),
+	FString("鼠标右键的输入标签")
+	);
+	
+	GameplayTags.InputTag_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("InputTag.1"),
+	FString("键盘1键的输入标签")
+	);
+	
+	GameplayTags.InputTag_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("InputTag.2"),
+	FString("键盘2键的输入标签")
+	);
+	
+	GameplayTags.InputTag_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("InputTag.3"),
+	FString("键盘3键的输入标签")
+	);
+	
+	GameplayTags.InputTag_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("InputTag.4"),
+	FString("键盘4键的输入标签")
+	);
+#pragma endregion	
+	
 }

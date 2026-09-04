@@ -5,12 +5,14 @@
 #include "CoreMinimal.h"
 #include "AuraPlayerController.generated.h"
 
+class UAuraInputConfig;
 class AAuraEnemy;
 class UEnemyInterface;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 class IEnemyInterface;
+struct FGameplayTag;
 /**
  * 
  */
@@ -38,4 +40,11 @@ private:
 	void CursorTrace();
 	TWeakInterfacePtr<IEnemyInterface> LastActor;
 	TWeakInterfacePtr<IEnemyInterface> ThisActor;
+	
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+	void AbilityInputTagHeld(FGameplayTag InputTag);
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UAuraInputConfig> InputConfig;
 };
