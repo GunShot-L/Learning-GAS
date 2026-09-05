@@ -14,6 +14,7 @@
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/SplineComponent.h"
 #include "Input/AuraInputComponent.h"
 
@@ -26,11 +27,12 @@ AAuraPlayerController::AAuraPlayerController()
 	
 }
 
-void AAuraPlayerController::Tick(float DeltaTime)
+void AAuraPlayerController::PlayerTick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::PlayerTick(DeltaTime);
 	
 	CursorTrace();
+	AutoRun();
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -175,6 +177,8 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
+			// UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CacheDestination);
+			
 			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CacheDestination))
 			{
 				Spline->ClearSplinePoints();
@@ -235,4 +239,23 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 		AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
 	}
 	return AuraAbilitySystemComponent;
+}
+
+void AAuraPlayerController::AutoRun()
+{
+	if (!bAutoRunning) return; 
+	// 沿着Spline的切线方向进行自动移动，直到接近目标点附近
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
+		ControlledPawn->AddMovementInput(Direction);
+		
+		const float DistanceToDestination = (LocationOnSpline - CacheDestination).Length();
+		if (DistanceToDestination <= AutoRunAcceptanceRadius)
+		{
+			bAutoRunning = false;
+		}
+		
+	}
 }

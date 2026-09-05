@@ -24,7 +24,7 @@ class GAS_AURA_API AAuraPlayerController : public APlayerController
 	GENERATED_BODY()
 public:
 	AAuraPlayerController();
-	virtual void Tick(float DeltaTime) override;
+	virtual void PlayerTick(float DeltaTime) override; // 注意到不是普通的Tick，PlayerTick是PlayerController专属的，优先级比普通Tick高
 	
 protected:
 	virtual void BeginPlay() override;
@@ -66,4 +66,6 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+	
+	void AutoRun();
 };
