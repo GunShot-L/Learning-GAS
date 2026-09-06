@@ -86,59 +86,16 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void AAuraPlayerController::CursorTrace()
 {
-	FHitResult CursorHit;
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit) return;
 	
 	LastActor = ThisActor;
 	ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
 	
-	/*
-	 *	从鼠标方向做射线检测。有以下几种情况：
-	 *	A、LastActor 为空且ThisActor也为空
-	 *		- 啥也不干
-	 *	B、LastActor为空但ThisActor不为空
-	 *		- 高光标记ThisActor
-	 *	C、LastActor不为空但是ThisACtor为空
-	 *		- 取消LastActor的高光标记
-	 *	D、两个都不为空，但是LastActor不等于ThisActor
-	 *		- 取消LastActor，转为ThisActor高光
-	 *	E、两个都不为空，但是是同一个Actor
-	 *		- 啥也不干
-	 */
-	
-	if (LastActor == nullptr)
+	if (LastActor != ThisActor)
 	{
-		if (ThisActor != nullptr)
-		{
-			// Case B
-			ThisActor->HighlightActor();
-		}
-		else
-		{
-			// Case A
-		}
-	}
-	else
-	{
-		if (ThisActor == nullptr)
-		{
-			// Case C
-			LastActor->UnHighlightActor();
-		}
-		else
-		{
-			if (LastActor != ThisActor)
-			{
-				// Case D
-				LastActor->UnHighlightActor();
-				ThisActor->HighlightActor();
-			}
-			else
-			{
-				// Case E
-			}
-		}
+		if (LastActor != nullptr) LastActor->UnHighlightActor();
+		if (ThisActor != nullptr) ThisActor->HighlightActor();
 	}
 }
 
@@ -163,7 +120,6 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		return;
 	}
 	
-	
 	if (bTargeting)
 	{
 		if (GetASC())
@@ -174,9 +130,11 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	else
 	{
 		// 处理单击左键移动
-		APawn* ControlledPawn = GetPawn();
+		const APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
+			// 生成寻路信息，并记录到Spline上，使后续的寻路移动更丝滑
+			
 			// UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CacheDestination);
 			
 			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CacheDestination))
@@ -185,7 +143,10 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 				for (const FVector& PointLoc : NavPath->PathPoints)
 				{
 					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-					DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Green, false, 5.f);
+				}
+				if (!NavPath->PathPoints.IsEmpty())
+				{
+					CacheDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
 				}
 				bAutoRunning = true;
 			}
@@ -217,10 +178,9 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	else
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
-		FHitResult Hit;
-		if (GetHitResultUnderCursor(ECC_Visibility, false, Hit))
+		if (CursorHit.bBlockingHit)
 		{
-			CacheDestination = Hit.ImpactPoint;
+			CacheDestination = CursorHit.ImpactPoint;
 		}
 		
 		if (APawn* ControlledPawn = GetPawn())
@@ -251,8 +211,7 @@ void AAuraPlayerController::AutoRun()
 		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
 		ControlledPawn->AddMovementInput(Direction);
 		
-		const float DistanceToDestination = (LocationOnSpline - CacheDestination).Length();
-		if (DistanceToDestination <= AutoRunAcceptanceRadius)
+		if ((LocationOnSpline - CacheDestination).Length() <= AutoRunAcceptanceRadius)
 		{
 			bAutoRunning = false;
 		}
