@@ -8,7 +8,7 @@
 
 class UGameplayEffect;
 
-UENUM()
+UENUM(BlueprintType)
 enum class ECharacterClass : uint8
 {
 	Elementalist, // 奥术师、元素师
