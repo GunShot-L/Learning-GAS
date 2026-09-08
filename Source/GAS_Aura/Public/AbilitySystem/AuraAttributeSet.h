@@ -109,7 +109,7 @@ public:
 #pragma endregion
 	
 #pragma region "次级属性"
-	
+public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Secondary Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxHealth)
@@ -151,6 +151,14 @@ public:
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ManaRegeneration)
 	
 #pragma endregion 
+	
+#pragma region "元属性"
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage)
+	
+#pragma endregion
 	
 public:
 	UFUNCTION()
