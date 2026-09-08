@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "AuraPlayerController.generated.h"
 
 class UAuraInputConfig;
@@ -12,7 +13,6 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 class IEnemyInterface;
-struct FGameplayTag;
 class UAuraAbilitySystemComponent;
 class USplineComponent;
 /**
@@ -39,6 +39,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> ShiftAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	FGameplayTag InputTagForAutoMove;
 	
 	void ShiftPressed() {bShiftKeyDown = true;};
 	void ShiftReleased(){bShiftKeyDown = false;};
