@@ -109,4 +109,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	);
 #pragma endregion
 	
+#pragma region "Effects"
+	
+	GameplayTags.Effects_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Effects.HitReact"),
+	FString("用于受击时赋予")
+	);
+#pragma endregion
 }
