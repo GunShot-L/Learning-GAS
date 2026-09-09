@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "UI/Widgets/DamageTextComponent.h"
 #include "AuraPlayerController.generated.h"
 
 class UAuraInputConfig;
@@ -26,6 +27,8 @@ public:
 	AAuraPlayerController();
 	virtual void PlayerTick(float DeltaTime) override; // 注意到不是普通的Tick，PlayerTick是PlayerController专属的，优先级比普通Tick高
 	
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -79,4 +82,7 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 	
 	void AutoRun();
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 };
