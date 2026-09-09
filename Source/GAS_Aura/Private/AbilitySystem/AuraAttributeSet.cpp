@@ -103,6 +103,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 			const bool bFatal = NewHealth <= 0.f;
 			if (!bFatal)
 			{
+				// 播放受击动效
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
@@ -116,6 +117,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 				}
 			}
 			
+			// 显示伤害飘字
 			ShowFloatingText(Props, LocalIncomingDamage);
 		}
 	}
