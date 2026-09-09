@@ -23,7 +23,10 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
 			AbilitySpec.DynamicAbilityTags.AddTag(AuraAbility->StartupInputTag);
 			GiveAbility(AbilitySpec);
 		}
-		// GiveAbilityAndActivateOnce(AbilitySpec);
+		else
+		{
+			GiveAbility(AbilitySpec);
+		}
 	}
 }
 
