@@ -223,7 +223,7 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 	if (Data.Target.AbilityActorInfo.IsValid())
 	{
 		Props.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
-		Props.TargetCharacter = Cast<ACharacter>(Props.TargetController->GetPawn());
+		Props.TargetCharacter = Props.TargetController ? Cast<ACharacter>(Props.TargetController->GetPawn()) : nullptr;
 		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
 	}
 }
