@@ -16,6 +16,7 @@ void UTargetDataUnderMouse::Activate()
 {
 	// AbilityTask知道自己是属于哪个Ability
 	const bool bIsLocallyControlled = Ability->GetCurrentActorInfo()->IsLocallyControlled();
+	// const bool bIsRemoteControlled = Ability->GetCurrentActorInfo()->IsNetAuthority();
 	if (bIsLocallyControlled)
 	{
 		// 客户端本地执行的能力，需要发送到服务器
