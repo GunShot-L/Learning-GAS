@@ -101,6 +101,30 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	);
 #pragma endregion	
 	
+#pragma region "Resistance"
+	
+	GameplayTags.Attribute_Resistance_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Attribute.Resistance.Fire"),
+	FString("火属性抗性计算用的标签")
+	);
+	
+	GameplayTags.Attribute_Resistance_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Attribute.Resistance.Lightning"),
+	FString("电属性抗性计算用的标签")
+	);
+	
+	GameplayTags.Attribute_Resistance_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Attribute.Resistance.Arcane"),
+	FString("奥术属性抗性计算用的标签")
+	);
+	
+	GameplayTags.Attribute_Resistance_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Attribute.Resistance.Physical"),
+	FString("物理属性抗性计算用的标签")
+	);
+	
+#pragma endregion 
+	
 #pragma region "Damage"
 	
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -113,7 +137,27 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	FString("火属性伤害计算用的标签")
 	);
 	
-	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Fire);
+	GameplayTags.Damage_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Damage.Lightning"),
+	FString("电属性伤害计算用的标签")
+	);
+	
+	GameplayTags.Damage_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Damage.Arcane"),
+	FString("奥术属性伤害计算用的标签")
+	);
+	
+	GameplayTags.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Damage.Physical"),
+	FString("物理属性伤害计算用的标签")
+	);
+	
+	
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Fire, GameplayTags.Attribute_Resistance_Fire); // 将属性伤害和属性抗性标签整合，方便后续查询
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lightning, GameplayTags.Attribute_Resistance_Lightning);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Arcane, GameplayTags.Attribute_Resistance_Arcane);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Physical, GameplayTags.Attribute_Resistance_Physical);
+	
 #pragma endregion
 	
 #pragma region "Effects"
