@@ -28,7 +28,7 @@ public:
 	virtual void PlayerTick(float DeltaTime) override; // 注意到不是普通的Tick，PlayerTick是PlayerController专属的，优先级比普通Tick高
 	
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bBlocked, bool bCriticalHit);
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

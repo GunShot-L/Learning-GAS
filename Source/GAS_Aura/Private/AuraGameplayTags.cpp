@@ -107,6 +107,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	FName("Damage"),
 	FString("伤害计算用的标签")
 	);
+	
+	GameplayTags.Damage_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Damage.Fire"),
+	FString("火属性伤害计算用的标签")
+	);
 #pragma endregion
 	
 #pragma region "Effects"
