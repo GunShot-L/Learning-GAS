@@ -104,22 +104,22 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 #pragma region "Resistance"
 	
 	GameplayTags.Attribute_Resistance_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
-	FName("Attribute.Resistance.Fire"),
+	FName("Attributes.Resistance.Fire"),
 	FString("火属性抗性计算用的标签")
 	);
 	
 	GameplayTags.Attribute_Resistance_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
-	FName("Attribute.Resistance.Lightning"),
+	FName("Attributes.Resistance.Lightning"),
 	FString("电属性抗性计算用的标签")
 	);
 	
 	GameplayTags.Attribute_Resistance_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
-	FName("Attribute.Resistance.Arcane"),
+	FName("Attributes.Resistance.Arcane"),
 	FString("奥术属性抗性计算用的标签")
 	);
 	
 	GameplayTags.Attribute_Resistance_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
-	FName("Attribute.Resistance.Physical"),
+	FName("Attributes.Resistance.Physical"),
 	FString("物理属性抗性计算用的标签")
 	);
 	

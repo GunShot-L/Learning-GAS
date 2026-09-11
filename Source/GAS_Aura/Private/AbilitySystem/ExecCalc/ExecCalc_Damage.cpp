@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/ExecCalc/ExecCalc_Damage.h"
 
+#include <mutex>
+
 #include "AbilitySystemComponent.h"
 #include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
@@ -21,6 +23,13 @@ struct AuraDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitDamage);
 	
+	DECLARE_ATTRIBUTE_CAPTUREDEF(FireResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(LightningResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ArcaneResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance);
+	
+	mutable TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
+	
 	AuraDamageStatics()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, Armor, Target, false); // 目标防御力
@@ -29,6 +38,42 @@ struct AuraDamageStatics
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, CriticalHitChance, Source, false); // 施法者暴击概率
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, CriticalHitResistance, Source, false); // 目标暴击抗性
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, CriticalHitDamage, Source, false); // 施法者暴击伤害加成
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, FireResistance, Target, false); // 目标火抗
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, LightningResistance, Target, false); // 目标光抗
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ArcaneResistance, Target, false); // 目标暗抗
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, PhysicalResistance, Target, false); // 目标物理抗性
+		
+		
+	}
+	
+	mutable std::once_flag Once;
+	
+	void InitializeTagsToCaptureDefs() const
+	{
+		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+		
+		TagsToCaptureDefs.Add(Tags.Attribute_Secondary_Armor, ArmorDef);
+		TagsToCaptureDefs.Add(Tags.Attribute_Secondary_ArmorPenetration, ArmorPenetrationDef);
+		TagsToCaptureDefs.Add(Tags.Attribute_Secondary_BlockChance, BlockChanceDef);
+		TagsToCaptureDefs.Add(Tags.Attribute_Secondary_CriticalHitChance, CriticalHitChanceDef);
+		TagsToCaptureDefs.Add(Tags.Attribute_Secondary_CriticalHitResistance, CriticalHitResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attribute_Secondary_CriticalHitDamage, CriticalHitDamageDef);
+		
+		TagsToCaptureDefs.Add(Tags.Attribute_Resistance_Fire, FireResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attribute_Resistance_Lightning, LightningResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attribute_Resistance_Arcane, ArcaneResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attribute_Resistance_Physical, PhysicalResistanceDef);
+		
+	}
+	
+	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& GetTagsToCaptureDefs() const 
+	{
+		std::call_once(Once, [this]()
+		{
+			InitializeTagsToCaptureDefs();
+		});
+		return TagsToCaptureDefs;
 	}
 	
 };
@@ -49,6 +94,11 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitChanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitResistanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitDamageDef);
+	
+	RelevantAttributesToCapture.Add(DamageStatics().FireResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().LightningResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ArcaneResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().PhysicalResistanceDef);
 }
 
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
@@ -90,7 +140,21 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	// 分开计算不同类型的伤害
 	for (auto& Pair : FAuraGameplayTags::Get().DamageTypesToResistance)
 	{
-		const float DamageValue = Spec.GetSetByCallerMagnitude(Pair.Key);
+		const FGameplayTag DamageTypeTag = Pair.Key; // 伤害类型标签
+		const FGameplayTag ResistanceTag = Pair.Value; // 抗性类型标签
+		const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs = DamageStatics().GetTagsToCaptureDefs();
+		
+		checkf(TagsToCaptureDefs.Contains(ResistanceTag), TEXT("TagsToCaptureDefs doesn't contain Tag: [%s] in ExecCalc_Damage"), *ResistanceTag.ToString());
+		const FGameplayEffectAttributeCaptureDefinition CaptureDef = TagsToCaptureDefs[ResistanceTag];
+		
+		float DamageValue = Spec.GetSetByCallerMagnitude(Pair.Key); // 施法者伤害类型数值
+		
+		float Resistance = 0.f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluateParameters, Resistance);
+		Resistance = FMath::Clamp(Resistance, 0.f, 100.f); // 目标对应抗性类型数值
+		
+		DamageValue *= (100.f - Resistance) / 100.f;
+		
 		Damage += DamageValue;
 	}
 	

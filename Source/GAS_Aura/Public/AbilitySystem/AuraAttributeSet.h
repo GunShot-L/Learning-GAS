@@ -152,6 +152,26 @@ public:
 	
 #pragma endregion 
 	
+#pragma region "抗性属性"
+public:
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData FireResistance; //火属性抗性
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, FireResistance)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightningResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData LightningResistance; //电属性抗性
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, LightningResistance)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArcaneResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData ArcaneResistance; //火属性抗性
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ArcaneResistance)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData PhysicalResistance; //火属性抗性
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, PhysicalResistance)
+	
+	
+#pragma endregion
 #pragma region "元属性"
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
@@ -208,6 +228,20 @@ public:
 
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
+
+	UFUNCTION()
+	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
+
+	UFUNCTION()
+	void OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance) const;
+	
+	UFUNCTION()
+	void OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance) const;
+
+	UFUNCTION()
+	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
+
+
 
 
 	
