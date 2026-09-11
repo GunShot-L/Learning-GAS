@@ -19,9 +19,9 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 {
-	// 此处的bIsServer判断貌似没必要，加上之后客户端就不会产生火球效果了
-	// const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
-	// if (!bIsServer) return;
+	// 此处的bIsServer是只由服务器去生成实际的火球，客户端只负责请求，注意火球Actor需要开启复制，否则生成后客户端看不到。
+	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
+	if (!bIsServer) return;
 	
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
 	
@@ -39,7 +39,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 			ProjectileClass,
 			SpawnTransform,
 			GetOwningActorFromActorInfo(),
-			Cast<APawn>(GetAvatarActorFromActorInfo()),
+			Cast<APawn>(GetOwningActorFromActorInfo()),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());

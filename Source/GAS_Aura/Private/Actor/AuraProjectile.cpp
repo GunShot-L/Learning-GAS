@@ -15,7 +15,8 @@
 
 AAuraProjectile::AAuraProjectile()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+	SetReplicates(true); // 开启网络复制，由服务端生成后客户端也能同步显示，貌似这里默认是未开启
 	
 	Sphere = CreateDefaultSubobject<USphereComponent>("Sphere");
 	SetRootComponent(Sphere);
@@ -47,7 +48,7 @@ void AAuraProjectile::Destroyed()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-		LoopingSoundComponent->Stop();
+		if (LoopingSoundComponent) LoopingSoundComponent->Stop();
 	}
 	Super::Destroyed();
 	
@@ -62,8 +63,7 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 	{
 		LoopingSoundComponent->Stop();
 	}
-	APawn* Instig = GetInstigator();
-	if (Instig == OtherActor)
+	if (GetInstigator() == OtherActor)
 	{
 		return;
 	}
