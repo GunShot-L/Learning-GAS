@@ -167,4 +167,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	FString("用于受击时赋予")
 	);
 #pragma endregion
+	
+#pragma region "Abilities"
+	
+	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Abilities.Attack"),
+	FString("攻击标签")
+	);
+#pragma endregion
 }
