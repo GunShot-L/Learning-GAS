@@ -11,6 +11,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GAS_Aura/GAS_Aura.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/AuraPlayerState.h"
 
 
 AAuraProjectile::AAuraProjectile()
@@ -57,15 +58,20 @@ void AAuraProjectile::Destroyed()
 void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (const AAuraPlayerState* PS = Cast<AAuraPlayerState>(Owner))
+	{
+		if (PS->GetAbilitySystemComponent()->GetAvatarActor() == OtherActor)
+		{
+			// 不知为何，在纯客户端模式下，自己发射的火球会直接碰撞自己，然后让自己收到伤害
+			// 但是有服务器监听模式却不会，这里加个检测，如果碰撞的是自己，则跳过
+			return;
+		}
+	}
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 	if (LoopingSoundComponent)
 	{
 		LoopingSoundComponent->Stop();
-	}
-	if (GetInstigator() == OtherActor)
-	{
-		return;
 	}
 	
 	if (HasAuthority())
