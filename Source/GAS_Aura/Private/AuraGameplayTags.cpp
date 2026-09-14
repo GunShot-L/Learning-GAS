@@ -175,4 +175,24 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	FString("攻击标签")
 	);
 #pragma endregion
+	
+#pragma region "Montage"
+	
+	GameplayTags.Montage_Attack_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Montage.Attack.Weapon"),
+	FString("蒙太奇武器攻击标签")
+	);
+	
+	GameplayTags.Montage_Attack_RightHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Montage.Attack.RightHand"),
+	FString("蒙太奇右手攻击标签")
+	);
+	
+	GameplayTags.Montage_Attack_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Montage.Attack.LeftHand"),
+	FString("蒙太奇左手攻击标签")
+	);
+	
+#pragma endregion
+	
 }
