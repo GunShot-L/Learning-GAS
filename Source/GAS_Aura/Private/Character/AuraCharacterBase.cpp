@@ -73,6 +73,7 @@ void AAuraCharacterBase::InitAbilityActorInfo()
 
 FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
+	// 根据自定义的插槽标签与名字的映射，去取不同的插槽位置，用于攻击时的位置判定
 	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon) && IsValid(Weapon))
 	{
@@ -106,6 +107,7 @@ TArray<FTaggedMontage> AAuraCharacterBase::GetTaggedMontages_Implementation()
 
 void AAuraCharacterBase::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& GameplayEffect, float Level) const
 {
+	// 给自己施加一个GE（TargetASC是自己的ASC）
 	check(IsValid(GetAbilitySystemComponent()));
 	check(GameplayEffect);
 	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
@@ -131,6 +133,7 @@ void AAuraCharacterBase::AddCharacterAbilities()
 
 void AAuraCharacterBase::Dissolve()
 {
+	// 角色网格图基础的溶解特效播放控制，实际播放细节在蓝图里设置
 	if (IsValid(DissolveMaterialInstance))
 	{
 		UMaterialInstanceDynamic* DynamicMatInst = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);

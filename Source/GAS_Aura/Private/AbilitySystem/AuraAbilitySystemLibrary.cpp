@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AuraAbilityTypes.h"
+#include "Character/AuraCharacterBase.h"
 #include "Engine/OverlapResult.h"
 #include "Game/AuraGameModeBase.h"
 #include "Interaction/CombatInterface.h"
@@ -142,8 +143,20 @@ void UAuraAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldC
 		{
 			if (Overlap.GetActor()->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsDead(Overlap.GetActor()))
 			{
+				if (const AActor* Character = Cast<AActor>(WorldContextObject))
+				{
+					if (IsFriendActor(Character, Overlap.GetActor()))
+					{
+						continue;
+					}
+				}
 				OutOverlappingActors.AddUnique(ICombatInterface::Execute_GetActor(Overlap.GetActor()));
 			}
 		}
 	}
+}
+
+bool UAuraAbilitySystemLibrary::IsFriendActor(const AActor* FirstActor, const AActor* SecondActor)
+{
+	return (FirstActor->ActorHasTag(FName("Player")) && SecondActor->ActorHasTag(FName("Player"))) || FirstActor->ActorHasTag(FName("Enemy")) && SecondActor->ActorHasTag(FName("Enemy"));
 }
